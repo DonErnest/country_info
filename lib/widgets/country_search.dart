@@ -6,8 +6,11 @@ import 'package:http/http.dart';
 
 class CountrySearch extends StatefulWidget {
   final void Function(CountryData? country) setCountry;
+  final void Function(List<String>? names) setBorderCountries;
+  final void Function() dataFetched;
+  final void Function(String error) errorRaised;
 
-  const CountrySearch({super.key, required this.setCountry});
+  const CountrySearch({super.key, required this.setCountry, required this.dataFetched, required this.errorRaised, required this.setBorderCountries});
 
   @override
   State<CountrySearch> createState() => _CountrySearchState();
@@ -19,10 +22,28 @@ class _CountrySearchState extends State<CountrySearch> {
 
   Future<dynamic> searchCountry(String countryName) async {
     final uri = Uri.parse('https://restcountries.com/v3.1/name/${countryName}');
-    final response = await get(uri);
-    if (response.statusCode == 200) {
-      final List<dynamic> jsonData = jsonDecode(response.body);
-      return jsonData;
+    try {
+      final response = await get(uri);
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = jsonDecode(response.body);
+        return jsonData;
+      }
+    } catch (error) {
+      widget.errorRaised(error.toString());
+      return null;
+    }
+  }
+
+  Future<List<String>?> searchBorderCountries(List<String> countryCodes) async {
+    final uri = Uri.parse('https://restcountries.com/v3.1/alpha?codes=${countryCodes.join(",")}');
+    try {
+      final response = await get(uri);
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = jsonDecode(response.body);
+        return jsonData.map((country) => country["name"]["common"] as String).toList();
+      }
+    } catch (error) {
+      return null;
     }
     return null;
   }
@@ -31,22 +52,15 @@ class _CountrySearchState extends State<CountrySearch> {
     if (searchedCountyName != null) {
       final rawData = await searchCountry(searchedCountyName!);
       if (rawData != null && rawData.length != 0) {
-        final countries =
-            rawData
-                .map(
-                  (json) => CountryData(
-                    name: json["name"]["common"],
-                    capital: json["capital"][0],
-                    region: json["region"],
-                    area: json["area"],
-                    population: json["population"] / 1000,
-                    flag: json["flags"]["png"],
-                  ),
-                )
-                .toList();
-
+        final countries = rawData.map((json) => CountryData.fromJson(json)).toList();
+        widget.setCountry(countries.first);
+        var borderCountries = await searchBorderCountries(countries.first.borderingCountryCodes);
+        print(borderCountries);
+        widget.setBorderCountries(borderCountries);
+      } else {
+        widget.setCountry(null);
       };
-      widget.setCountry(null);
+      widget.dataFetched();
     }
   }
 

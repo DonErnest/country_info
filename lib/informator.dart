@@ -1,11 +1,7 @@
-import 'dart:convert';
-
 import 'package:country_info/models/country_data.dart';
 import 'package:country_info/widgets/country_card.dart';
 import 'package:country_info/widgets/country_search.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:http/http.dart';
 
 class CountryInformator extends StatefulWidget {
   const CountryInformator({super.key});
@@ -17,8 +13,11 @@ class CountryInformator extends StatefulWidget {
 class _CountryInformatorState extends State<CountryInformator> {
   var searchController = TextEditingController();
   String? searchedCountyName;
+  bool isFetching = true;
+  String? fetchedError;
 
   CountryData? country;
+  List<String>? borderingCountries;
 
   @override
   void initState() {
@@ -31,11 +30,38 @@ class _CountryInformatorState extends State<CountryInformator> {
     });
   }
 
+  displayDisplayCountriesInfo(List<String>? foundCountries) {
+    setState(() {
+      borderingCountries = foundCountries;
+    });
+  }
+
+  void dataFetched() {
+    setState(() {
+      isFetching = false;
+    });
+  }
+
+  void errorRaised(String error) {
+    setState(() {
+      fetchedError = error;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget countryWidget = Text("no country has been found");
+    Widget countryWidget = Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      child: Text("no country has been found"),
+    );
+    if (fetchedError != null) {
+      countryWidget = Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        child: Text(fetchedError!),
+      );
+    }
     if (country != null) {
-      countryWidget = CountryCard(country: country);
+      countryWidget = CountryCard(country: country, borderingCountiesNames: borderingCountries,);
     }
     return SafeArea(
       child: Scaffold(
@@ -43,8 +69,15 @@ class _CountryInformatorState extends State<CountryInformator> {
         body: Center(
           child: Column(
             children: [
-              CountrySearch(setCountry: displayCountryInfo),
-              countryWidget,
+              CountrySearch(
+                setCountry: displayCountryInfo,
+                setBorderCountries: displayDisplayCountriesInfo,
+                dataFetched: dataFetched,
+                errorRaised: errorRaised,
+              ),
+              isFetching
+                  ? Center(child: CircularProgressIndicator())
+                  : countryWidget,
             ],
           ),
         ),

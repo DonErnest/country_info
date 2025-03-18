@@ -2,12 +2,14 @@ import 'package:country_info/models/country_data.dart';
 import 'package:flutter/material.dart';
 
 class CountryCard extends StatelessWidget {
+  final CountryData? country;
+  final List<String>? borderingCountiesNames;
+
   const CountryCard({
     super.key,
     required this.country,
+    this.borderingCountiesNames,
   });
-
-  final CountryData? country;
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +25,7 @@ class CountryCard extends StatelessWidget {
                 Image.network(country!.flag),
                 Divider(),
                 Row(
-                  children: [
-                    Text("Region:"),
-                    Spacer(),
-                    Text(country!.region),
-                  ],
+                  children: [Text("Region:"), Spacer(), Text(country!.region)],
                 ),
                 Row(
                   children: [
@@ -48,6 +46,19 @@ class CountryCard extends StatelessWidget {
                     Text("Population(mln):"),
                     Spacer(),
                     Text(country!.population.toString()),
+                  ],
+                ),
+                Divider(),
+                Row(
+                  children: [
+                    Text("Borders with:"),
+                    Spacer(),
+                    Text(
+                      textAlign: TextAlign.right,
+                      borderingCountiesNames != null
+                          ? borderingCountiesNames!.join("\n")
+                          : "Could not retrieve data",
+                    ),
                   ],
                 ),
               ],

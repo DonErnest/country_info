@@ -6,15 +6,18 @@ class CountryData {
 
   final double population;
   final String flag;
+  final List<String> borderingCountryCodes;
 
   factory CountryData.fromJson(Map<String, dynamic> json) {
+    List<dynamic> countryCodes = json["borders"];
     return CountryData(
-      name: json['name'],
-      capital: json['capital'],
-      region: json['region'],
-      area: json['area'],
-      population: json['population'] ,
-      flag: json['flags']['png'],
+        name: json["name"]["common"],
+        capital: json["capital"][0],
+        region: json["region"],
+        area: json["area"],
+        population: json["population"] / 1000,
+        flag: json["flags"]["png"],
+        borderingCountryCodes: countryCodes.map((countryCode) => countryCode as String).toList(),
     );
   }
 
@@ -25,5 +28,6 @@ class CountryData {
     required this.area,
     required this.population,
     required this.flag,
+    required this.borderingCountryCodes,
   });
 }
