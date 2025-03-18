@@ -29,7 +29,7 @@ class _CountrySearchState extends State<CountrySearch> {
         return jsonData;
       }
     } catch (error) {
-      widget.errorRaised(error.toString());
+      widget.errorRaised("Network error. Please, try again later or write to the app support");
       return null;
     }
   }

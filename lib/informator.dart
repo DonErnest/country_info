@@ -50,6 +50,7 @@ class _CountryInformatorState extends State<CountryInformator> {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
     Widget countryWidget = Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       child: Text("no country has been found"),
@@ -57,11 +58,19 @@ class _CountryInformatorState extends State<CountryInformator> {
     if (fetchedError != null) {
       countryWidget = Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        child: Text(fetchedError!),
+        child: Text(
+          fetchedError!,
+          style: theme.textTheme.bodyMedium!.copyWith(
+            color: theme.colorScheme.error,
+          ),
+        ),
       );
     }
     if (country != null) {
-      countryWidget = CountryCard(country: country, borderingCountiesNames: borderingCountries,);
+      countryWidget = CountryCard(
+        country: country,
+        borderingCountiesNames: borderingCountries,
+      );
     }
     return SafeArea(
       child: Scaffold(
