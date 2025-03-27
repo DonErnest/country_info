@@ -12,3 +12,10 @@ Future<List<CountryData>> getCountriesList(
   }
   return [];
 }
+
+CountryData? getCountryByName(String countryName, List<CountryData> countries) {
+  return countries.firstWhere(
+    (country) =>
+        country.name.toLowerCase().trim() == countryName.toLowerCase().trim(),
+  );
+}

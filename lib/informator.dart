@@ -14,29 +14,12 @@ class CountryInformator extends StatefulWidget {
 }
 
 class _CountryInformatorState extends State<CountryInformator> {
-  var searchController = TextEditingController();
-  String? searchedCountyName;
-  bool? isFetching;
-  String? fetchedError;
-
-  List<CountryData>? countries;
-
   CountryData? country;
   List<String>? borderingCountries;
 
   @override
   void initState() {
     super.initState();
-    downloadCountries();
-  }
-
-  Future<void> downloadCountries() async {
-    fetchingData();
-    final downloadedCountries = await getCountriesList(errorRaised);
-    setState(() {
-      countries = downloadedCountries;
-    });
-    dataFetched();
   }
 
   displayCountryInfo(CountryData? selectedCountry) {
@@ -48,24 +31,6 @@ class _CountryInformatorState extends State<CountryInformator> {
   displayDisplayCountriesInfo(List<String>? foundCountries) {
     setState(() {
       borderingCountries = foundCountries;
-    });
-  }
-
-  void fetchingData() {
-    setState(() {
-      isFetching = true;
-    });
-  }
-
-  void dataFetched() {
-    setState(() {
-      isFetching = false;
-    });
-  }
-
-  void errorRaised(String error) {
-    setState(() {
-      fetchedError = error;
     });
   }
 
@@ -87,7 +52,7 @@ class _CountryInformatorState extends State<CountryInformator> {
       child: Scaffold(
         appBar: AppBar(title: Text("Country info")),
         body: CountriesList(
-            countries: countries, fetchedError: fetchedError,
+          displayCountry: displayCountryInfo,
         ),
       ),
     );

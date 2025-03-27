@@ -11,7 +11,6 @@ class CountryData {
 
   factory CountryData.fromJson(Map<String, dynamic> json) {
     List<dynamic> countryCodes = json.containsKey("borders")? json["borders"] : [];
-    print(json);
     return CountryData(
         name: json["name"]["common"],
         capital: json.containsKey("capital")? json["capital"][0]: "No capital",

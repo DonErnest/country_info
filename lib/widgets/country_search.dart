@@ -1,13 +1,9 @@
-import 'dart:convert';
-
-import 'package:country_info/api.dart';
-import 'package:country_info/models/country_data.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 
 class CountrySearch extends StatefulWidget {
-
-  const CountrySearch({super.key});
+  final void Function(String countryName) onCountrySearch;
+  
+  const CountrySearch({super.key, required this.onCountrySearch});
 
   @override
   State<CountrySearch> createState() => _CountrySearchState();
@@ -15,9 +11,12 @@ class CountrySearch extends StatefulWidget {
 
 class _CountrySearchState extends State<CountrySearch> {
   var searchController = TextEditingController();
-  String? searchedCountyName;
+  String? searchedCountryName;
 
   Future<void> search() async {
+    if (searchedCountryName != null) {
+      widget.onCountrySearch(searchedCountryName!);
+    }
   }
 
   @override
@@ -32,7 +31,7 @@ class _CountrySearchState extends State<CountrySearch> {
               controller: searchController,
               maxLines: 1,
               keyboardType: TextInputType.text,
-              onChanged: (value) => setState(() => searchedCountyName = value),
+              onChanged: (value) => setState(() => searchedCountryName = value),
               decoration: const InputDecoration(
                 label: Text("Enter country name"),
               ),
