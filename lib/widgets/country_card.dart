@@ -3,16 +3,25 @@ import 'package:flutter/material.dart';
 
 class CountryCard extends StatelessWidget {
   final CountryData? country;
-  final List<String>? borderingCountiesNames;
+  final List<String>? borderingCountriesNames;
 
   const CountryCard({
     super.key,
     required this.country,
-    this.borderingCountiesNames,
+    this.borderingCountriesNames,
   });
 
   @override
   Widget build(BuildContext context) {
+    var borderingCountriesMessage = "Could not retrieve data";
+    print(borderingCountriesNames);
+    if (borderingCountriesNames != null ) {
+      if (borderingCountriesNames!.isNotEmpty) {
+        borderingCountriesMessage = borderingCountriesNames!.join("\n");
+      } else if (borderingCountriesNames!.isEmpty) {
+        borderingCountriesMessage = "No neighbors";
+      }
+    }
     return Card(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -55,9 +64,7 @@ class CountryCard extends StatelessWidget {
                     Spacer(),
                     Text(
                       textAlign: TextAlign.right,
-                      borderingCountiesNames != null
-                          ? borderingCountiesNames!.join("\n")
-                          : "Could not retrieve data",
+                      borderingCountriesMessage,
                     ),
                   ],
                 ),

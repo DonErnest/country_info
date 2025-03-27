@@ -13,7 +13,7 @@ class CountryInformator extends StatefulWidget {
 class _CountryInformatorState extends State<CountryInformator> {
   var searchController = TextEditingController();
   String? searchedCountyName;
-  bool isFetching = true;
+  bool? isFetching;
   String? fetchedError;
 
   CountryData? country;
@@ -33,6 +33,12 @@ class _CountryInformatorState extends State<CountryInformator> {
   displayDisplayCountriesInfo(List<String>? foundCountries) {
     setState(() {
       borderingCountries = foundCountries;
+    });
+  }
+
+  void fetchingData() {
+    setState(() {
+      isFetching = true;
     });
   }
 
@@ -69,7 +75,7 @@ class _CountryInformatorState extends State<CountryInformator> {
     if (country != null) {
       countryWidget = CountryCard(
         country: country,
-        borderingCountiesNames: borderingCountries,
+        borderingCountriesNames: borderingCountries,
       );
     }
     return SafeArea(
@@ -83,8 +89,9 @@ class _CountryInformatorState extends State<CountryInformator> {
                 setBorderCountries: displayDisplayCountriesInfo,
                 dataFetched: dataFetched,
                 errorRaised: errorRaised,
+                searchingCountry: fetchingData,
               ),
-              isFetching
+              isFetching != null && isFetching!
                   ? Center(child: CircularProgressIndicator())
                   : countryWidget,
             ],

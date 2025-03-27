@@ -9,8 +9,9 @@ class CountrySearch extends StatefulWidget {
   final void Function(List<String>? names) setBorderCountries;
   final void Function() dataFetched;
   final void Function(String error) errorRaised;
+  final void Function() searchingCountry;
 
-  const CountrySearch({super.key, required this.setCountry, required this.dataFetched, required this.errorRaised, required this.setBorderCountries});
+  const CountrySearch({super.key, required this.setCountry, required this.dataFetched, required this.errorRaised, required this.setBorderCountries, required this.searchingCountry});
 
   @override
   State<CountrySearch> createState() => _CountrySearchState();
@@ -50,12 +51,21 @@ class _CountrySearchState extends State<CountrySearch> {
 
   Future<void> search() async {
     if (searchedCountyName != null) {
+      widget.searchingCountry();
       final rawData = await searchCountry(searchedCountyName!);
       if (rawData != null && rawData.length != 0) {
         final countries = rawData.map((json) => CountryData.fromJson(json)).toList();
-        widget.setCountry(countries.first);
-        var borderCountries = await searchBorderCountries(countries.first.borderingCountryCodes);
-        print(borderCountries);
+        var country = countries.first;
+        widget.setCountry(country);
+
+        List<String>? borderCountries;
+        if (country.borderingCountryCodes != null) {
+          if (country.borderingCountryCodes.isNotEmpty) {
+            borderCountries = await searchBorderCountries(country.borderingCountryCodes);
+          } else if (country.borderingCountryCodes.isEmpty){
+            borderCountries = [];
+          }
+        }
         widget.setBorderCountries(borderCountries);
       } else {
         widget.setCountry(null);

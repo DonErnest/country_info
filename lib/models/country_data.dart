@@ -9,7 +9,7 @@ class CountryData {
   final List<String> borderingCountryCodes;
 
   factory CountryData.fromJson(Map<String, dynamic> json) {
-    List<dynamic> countryCodes = json["borders"];
+    List<dynamic> countryCodes = json.containsKey("borders")? json["borders"] : [];
     return CountryData(
         name: json["name"]["common"],
         capital: json["capital"][0],
